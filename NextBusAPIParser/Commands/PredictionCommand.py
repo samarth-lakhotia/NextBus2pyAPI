@@ -47,13 +47,16 @@ class PredictionCommand:
         all_stops = route_list.get_all_stops()
         results = list(filter(lambda x: stop_title.lower() in x.stop_title.lower(), all_stops))
         if results:
-            if len(results) > 1:
-                raise Exception("Multiple stops found with the given title %s" % stop_title)
-            return self.get_predictions_stop_id(results[0].stop_id)
+            all_predictions = [self.get_predictions_stop_id(x.stop_id) for x in results]
+
+            return all_predictions
         else:
             raise LookupError("Cannot find any stops with the given title")
+
 
 if __name__ == '__main__':
     a = PredictionCommand('umd')
     b = a.get_predictions_by_route_and_stop_id('122', '10001')
     print(b)
+    c = a.get_predictions_by_stop_title("courtyards")
+    print(c)

@@ -46,7 +46,7 @@ class Predictions:
         return directions
 
     def __repr__(self):
-        initial_string = "Route %s: " % self._xml_element.get('routeTitle')
+        initial_string = "Route %s at %s:" % (self._xml_element.get('routeTitle'), self.xml_element.get('stopTitle'))
         if self.has_predictions is False:
             return "%s No Predictions available" % initial_string
         direction_string = "Direction towards "
