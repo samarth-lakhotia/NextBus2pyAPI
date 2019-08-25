@@ -51,7 +51,7 @@ class RouteList:
         except FileNotFoundError:
             stops_pickle = PickleWrapper(
                 reduce(lambda y, x: y.union(set(RouteConfig(self.agency_tag, x.attrib['tag']).route.stops)),
-                       route_list, set()), timedelta(days=1).total_seconds())
+                       route_list, set()), timedelta(days=5).total_seconds())
             with open("stops.pickle", "wb") as f:
                 pickle.dump(stops_pickle, f)
         stops = stops_pickle.object_to_be_pickled
