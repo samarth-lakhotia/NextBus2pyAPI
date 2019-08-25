@@ -1,8 +1,14 @@
+import os
+import time
 from functools import reduce
 import global_vars
 from NextBusAPIParser.Commands.RouteConfig import RouteConfig
+from cachetools import cached, TTLCache
+import pickle
 
 command_url = global_vars.add_query_to_nextbus({"command": "routeList"})
+
+cache = TTLCache(maxsize=500, ttl=2000)
 
 
 class RouteList:
@@ -28,11 +34,26 @@ class RouteList:
         route_list = xml_parsed.findall(".//route")
         return route_list
 
+    @cached(cache)
     def get_all_stops(self):
         # expensive
         route_list = self.route_list
-        stops = reduce(lambda y, x: y.union(set(RouteConfig(self.agency_tag, x.attrib['tag']).route.stops)), route_list,
-                       set())
+        try:
+            with open("stops.pickle", "rb") as f:
+                stops_pickle = pickle.load(f)
+            if time.time() - stops_pickle.time_when_initialized > stops_pickle.time_to_reset:
+                stops_pickle = PickleWrapper(
+                    reduce(lambda y, x: y.union(set(RouteConfig(self.agency_tag, x.attrib['tag']).route.stops)),
+                           route_list, set()), stops_pickle.time_to_reset)
+                with open("stops.pickle", "wb") as f:
+                    pickle.dump(stops_pickle, f)
+        except FileNotFoundError:
+            stops_pickle = PickleWrapper(
+                reduce(lambda y, x: y.union(set(RouteConfig(self.agency_tag, x.attrib['tag']).route.stops)),
+                       route_list, set()), 10)
+            with open("stops.pickle", "wb") as f:
+                pickle.dump(stops_pickle, f)
+        stops = stops_pickle.object_to_be_pickled
         return list(stops)
 
     def get_route_by_keyword(self, name):
@@ -41,6 +62,15 @@ class RouteList:
         return list(final_result)
 
 
+class PickleWrapper:
+    def __init__(self, obj, time_to_reset):
+        self.object_to_be_pickled = obj
+        self.time_when_initialized = time.time()
+        self.time_to_reset = time_to_reset
+
+
 if __name__ == '__main__':
     a = RouteList('umd')
-    print(a.get_route_by_keyword('enclave'))
+    print(a.get_all_stops())
+    print(a.get_all_stops())
+    print(a.get_all_stops())

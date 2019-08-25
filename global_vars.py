@@ -4,7 +4,7 @@ import urllib.request as url_utils
 
 nextbus_base_url = urlsplit("http://webservices.nextbus.com/service/publicXMLFeed")
 
-TWO_DIRECTIONS = 0
+MULTIPLE_DIRECTIONS = 0
 LOOP = 1
 
 

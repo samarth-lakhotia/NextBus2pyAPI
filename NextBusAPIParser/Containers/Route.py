@@ -1,4 +1,4 @@
-from global_vars import LOOP, TWO_DIRECTIONS, read_xml_url
+from global_vars import LOOP, MULTIPLE_DIRECTIONS, read_xml_url
 from NextBusAPIParser.Containers.Stop import Stop
 
 
@@ -15,8 +15,8 @@ class Route:
         self.direction_type = self.__set_direction_type()
 
     def __set_direction_type(self):
-        if len(self.direction_elements) == 2:
-            return TWO_DIRECTIONS
+        if len(self.direction_elements) > 1:
+            return MULTIPLE_DIRECTIONS
         else:
             return LOOP
 
