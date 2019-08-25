@@ -22,7 +22,7 @@ class Prediction:
         self._minutes = value
 
     def __repr__(self):
-        return "{} minutes".format(self.minutes)
+        return "In {} minutes".format(self.minutes)
 
     def __str__(self):
-        return "{} minutes or {} seconds".format(self.minutes, self.seconds)
+        return "In {} minutes or {} seconds".format(self.minutes, self.seconds)
