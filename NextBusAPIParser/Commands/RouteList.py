@@ -1,8 +1,7 @@
-import os
 import time
 from datetime import timedelta
 from functools import reduce
-import global_vars
+from NextBusAPIParser import global_vars
 from NextBusAPIParser.Commands.RouteConfig import RouteConfig
 from cachetools import cached, TTLCache
 import pickle
@@ -32,7 +31,8 @@ class RouteList:
     def get_routelist_by_agency_tag(agency_tag):
         xml_parsed = global_vars.read_xml_url(
             global_vars.update_query_to_url_result(command_url, {"a": agency_tag}))
-        route_list = xml_parsed.findall(".//route")
+        route_list = list(map(lambda x: RouteConfig.get_data_route_and_agency_tag(agency_tag, x.get('tag')),
+                              xml_parsed.findall(".//route")))
         return route_list
 
     @cached(cache)
@@ -72,4 +72,4 @@ class PickleWrapper:
 
 if __name__ == '__main__':
     a = RouteList('umd')
-    print(a.get_all_stops())
+    print(list(a.get_routelist_by_agency_tag("umd")))

@@ -1,4 +1,4 @@
-import global_vars
+from NextBusAPIParser import global_vars
 from NextBusAPIParser.Containers.Route import Route
 
 route_config_command = global_vars.add_query_to_nextbus({"command": "routeConfig"})

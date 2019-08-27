@@ -1,4 +1,4 @@
-import global_vars
+from NextBusAPIParser import global_vars
 from NextBusAPIParser.Containers.Prediction import Prediction
 import time
 

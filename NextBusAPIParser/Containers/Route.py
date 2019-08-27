@@ -1,4 +1,4 @@
-from global_vars import LOOP, MULTIPLE_DIRECTIONS, read_xml_url
+from NextBusAPIParser.global_vars import LOOP, MULTIPLE_DIRECTIONS, read_xml_url
 from NextBusAPIParser.Containers.Stop import Stop
 
 

@@ -1,4 +1,4 @@
-import global_vars
+from NextBusAPIParser import global_vars
 from NextBusAPIParser.Commands.RouteList import RouteList
 from NextBusAPIParser.Containers.Predictions import Predictions
 

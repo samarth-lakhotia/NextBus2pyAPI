@@ -1,4 +1,3 @@
-import global_vars
 from NextBusAPIParser.Commands.RouteList import RouteList
 
 
