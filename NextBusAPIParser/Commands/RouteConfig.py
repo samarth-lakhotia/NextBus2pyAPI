@@ -33,14 +33,18 @@ class RouteConfig:
         xml_data = global_vars.read_xml_url(final_url)
         route_details = xml_data.find("route")
         if route_details is None:
-            raise Exception("The xml url built up is bad")
+            raise RouteDoesNotExistException("The xml url built up is bad")
         route_ele = Route(element=route_details)
         return route_ele
 
 
+class RouteDoesNotExistException(Exception):
+    def __init__(self, *args):
+        Exception.__init__(self, *args)
+
+
 if __name__ == '__main__':
-    route_conf = RouteConfig(agency="umd", route_tag="108")
-    route = route_conf.route
-    stops = route.stops
-    for stop in stops:
-        print("{} towards {}".format(stop.stop_title, stop.direction.get('title')))
+    try:
+        route_conf = RouteConfig(agency="umd", route_tag="8").route
+    except RouteDoesNotExistException:
+        print("Caught")

@@ -38,7 +38,17 @@ class Route:
     def __extract_stops(self):
         stops = self.xml_element.findall("./stop[@stopId]")
         return list(
-            set(map(lambda x: Stop(x, self.xml_element.find("./direction/stop[@tag='%s'].." % x.get('tag'))), stops)))
+            set(map(lambda x: Stop(x, self.xml_element.find("./direction/stop[@tag='%s'].." % x.get('tag')).attrib[
+                'title']), stops)))
+
+    def has_stop(self, stop_id):
+        return stop_id in list(map(lambda x: x.stop_id, self.stops))
+
+    def get_stop_by_id(self, stop_id):
+        if self.has_stop(stop_id):
+            return list(filter(lambda x: x.stop_id == stop_id, self.stops))[0]
+        else:
+            return None
 
     def get_stop_by_keyword(self, stop_keyword):
         results = list(filter(lambda x: stop_keyword.lower() in x.stop_title.lower(), self.stops))
@@ -48,4 +58,4 @@ class Route:
         return self.route_title
 
     def __str__(self):
-        return self.route_title
+        return self.__repr__()

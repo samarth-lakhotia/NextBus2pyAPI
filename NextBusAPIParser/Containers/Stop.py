@@ -7,7 +7,7 @@ class Stop:
         self.direction = direction
 
     def __repr__(self):
-        return self.stop_title
+        return str(self.__dict__)
 
     def __eq__(self, other):
         if isinstance(other, Stop):

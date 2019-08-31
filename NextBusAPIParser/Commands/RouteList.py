@@ -1,3 +1,4 @@
+import os
 import time
 from datetime import timedelta
 from functools import reduce
@@ -5,6 +6,7 @@ from NextBusAPIParser import global_vars
 from NextBusAPIParser.Commands.RouteConfig import RouteConfig
 from cachetools import cached, TTLCache
 import pickle
+import csv
 
 command_url = global_vars.add_query_to_nextbus({"command": "routeList"})
 
@@ -44,14 +46,13 @@ class RouteList:
                 stops_pickle = pickle.load(f)
             if time.time() - stops_pickle.time_when_initialized > stops_pickle.time_to_reset:
                 stops_pickle = PickleWrapper(
-                    reduce(lambda y, x: y.union(set(RouteConfig(self.agency_tag, x.attrib['tag']).route.stops)),
+                    reduce(lambda y, x: y.union(set(x.stops)),
                            route_list, set()), stops_pickle.time_to_reset)
                 with open("stops.pickle", "wb") as f:
                     pickle.dump(stops_pickle, f)
         except FileNotFoundError:
             stops_pickle = PickleWrapper(
-                reduce(lambda y, x: y.union(set(RouteConfig(self.agency_tag, x.attrib['tag']).route.stops)),
-                       route_list, set()), timedelta(days=5).total_seconds())
+                reduce(lambda y, x: y.union(set(x.stops)), route_list, set()), timedelta(days=5).total_seconds())
             with open("stops.pickle", "wb") as f:
                 pickle.dump(stops_pickle, f)
         stops = stops_pickle.object_to_be_pickled
@@ -70,6 +71,13 @@ class PickleWrapper:
         self.time_to_reset = time_to_reset
 
 
+def write_stops_to_csv(path_to_write, stops_list):
+    with open(os.path.join(path_to_write, "stops.csv"), "w", newline='') as f:
+        writer = csv.writer(f)
+        for stop in stops_list:
+            writer.writerow([stop.stop_title, stop.stop_id, stop.stop_title.lower(), stop.stop_id])
+
+
 if __name__ == '__main__':
     a = RouteList('umd')
-    print(list(a.get_routelist_by_agency_tag("umd")))
+    write_stops_to_csv(os.path.join(r"C:\Users\samar\Desktop"), a.get_all_stops())
