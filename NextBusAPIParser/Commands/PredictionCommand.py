@@ -29,15 +29,12 @@ class PredictionCommand:
         route_list = RouteList(self.agency_tag)
         matches = route_list.get_route_by_keyword(route_keyword)
         if matches:
-            if len(matches) > 1:
-                raise Exception("Multiple matches found, please have a good keyword")
-            stop_results = matches[0].route.get_stop_by_keyword(stop_keyword)
+            stop_results = [match.get_stop_by_keyword(stop_keyword) for match in matches]
             if stop_results:
-                if len(stop_results) > 1:
-                    raise Exception("Multiple stop names with the keyword %s found " % stop_keyword)
-                return self.get_predictions_by_route_and_stop_id(matches[0].route_tag, stop_results[0].stop_id)
+                return [self.get_predictions_by_route_and_stop_id(match.route_tag, stop.stop_id) for
+                        match, stop_result in zip(matches, stop_results) for stop in stop_result]
             else:
-                raise LookupError("No stop matches found")
+                raise LookupError("No stop matches for the given route found")
         else:
             raise LookupError("No routes with the given name found")
 
@@ -48,7 +45,6 @@ class PredictionCommand:
         results = list(filter(lambda x: stop_title.lower() in x.stop_title.lower(), all_stops))
         if results:
             all_predictions = [self.get_predictions_stop_id(x.stop_id) for x in results]
-
             return all_predictions
         else:
             raise LookupError("Cannot find any stops with the given title")
@@ -56,7 +52,7 @@ class PredictionCommand:
 
 if __name__ == '__main__':
     a = PredictionCommand('umd')
-    b = a.get_predictions_by_route_and_stop_id('122', '10001')
+    b = a.get_predictions_by_route_stop_keyword("enclave", "enclave")
     print(b)
-    c = a.get_predictions_by_stop_title("courtyards")
+    c = a.get_predictions_by_stop_title("stamp")
     print(c)

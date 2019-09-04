@@ -59,8 +59,8 @@ class RouteList:
         return list(stops)
 
     def get_route_by_keyword(self, name):
-        result = list(filter(lambda x: name.lower() in x.attrib['title'].lower(), self.route_list))
-        final_result = map(lambda x: RouteConfig(self.agency_tag, x.attrib['tag']), result)
+        result = list(filter(lambda x: name.lower() in x.route_title.lower(), self.route_list))
+        final_result = map(lambda x: RouteConfig(self.agency_tag, x.route_tag).route, result)
         return list(final_result)
 
 
